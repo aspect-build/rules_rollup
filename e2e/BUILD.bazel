@@ -1,0 +1,27 @@
+load("@aspect_rules_rollup//rollup:rollup_bundle.bzl", "rollup_bundle")
+load("@aspect_rules_js//js:node_package.bzl", "node_package")
+load("@npm//:node_modules.bzl", "node_modules")
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
+
+node_modules()
+
+node_package(
+    name = "lib",
+    src = "//lib:src",
+    package = "@rollup_example/lib",
+)
+
+rollup_bundle(
+    name = "bundle",
+    config_file = ":rollup.config.js",
+    entry_point = "main.js",
+    deps = [
+        ":lib",
+    ],
+)
+
+
+write_source_files(
+    name = "bundle_diff",
+    files = {"bundle_expected.js": "bundle.js"},
+)

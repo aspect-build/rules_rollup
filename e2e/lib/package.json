@@ -1,0 +1,4 @@
+{
+    "name": "@rollup_example/lib",
+    "module": "lib.js"
+}

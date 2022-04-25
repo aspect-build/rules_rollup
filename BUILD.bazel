@@ -1,5 +1,6 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
 
 gazelle_binary(
     name = "gazelle_bin",
@@ -19,4 +20,19 @@ bzl_library(
         "@bazel_tools//tools/build_defs/repo:http.bzl",
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
+)
+
+write_source_files(
+    name = "update_npm_deps",
+    # We don't need to perform diff test here. 
+    # Additionally, _is_file_missing gives false negative saying 
+    # file does not exist even though it does.
+    # https://github.com/aspect-build/bazel-lib/blob/c2d4481570f65551532b91e73b780b78ce0c8d4c/lib/private/write_source_file.bzl#L303
+    diff_test = False,
+    files = {
+        # Writing multiple files is somehow broken.
+        # TODO: find out why
+        "rollup/private/versions/v2.70.2/repositories.bzl": "@rollup_npm_deps//:repositories.bzl",
+        "rollup/private/versions/v2.70.2/node_modules.bzl": "@rollup_npm_deps//:node_modules.bzl",
+    },
 )

@@ -1,37 +1,18 @@
-# Template for Bazel rules
+# Bazel rules for rollup
 
-Copy this template to create a Bazel ruleset.
+**EXPERIMENTAL** this code is currently pre-release and not subject to any stability guarantee.
+It could be archived or there could be major breaking changes.
 
-Features:
-
-- follows the official style guide at https://docs.bazel.build/versions/main/skylark/deploying.html
-- includes Bazel formatting as a pre-commit hook (using [buildifier])
-- includes stardoc API documentation generator
-- includes typical toolchain setup
-- CI configured with GitHub Actions
-- Release on GitHub Actions when pushing a tag
-
-See https://docs.bazel.build/versions/main/skylark/deploying.html#readme
-
-[buildifier]: https://github.com/bazelbuild/buildtools/tree/master/buildifier#readme
-
-Ready to get started? Copy this repo, then
-
-1. search for "com_myorg_rules_mylang" and replace with the name you'll use for your workspace
-1. search for "myorg" and replace with GitHub org
-1. search for "mylang" and replace with the language/tool your rules are for
-1. rename directory "mylang" similarly
-1. run `pre-commit install` to get lints (see CONTRIBUTING.md)
-1. if you don't need to fetch platform-dependent tools, then remove anything toolchain-related.
-1. update the `actions/cache@v2` bazel cache key in [.github/workflows/ci.yaml](.github/workflows/ci.yaml) and [.github/workflows/release.yml](.github/workflows/release.yml) to be a hash of your source files.
-1. delete this section of the README (everything up to the SNIP).
-
----- SNIP ----
-
-# Bazel rules for mylang
+This is a pure-starlark distribution which replaces the `@bazel/rollup` npm package.
+It's meant for use with aspect-build/rules_js, which has a pnpm-based layout for node_modules.
 
 ## Installation
 
 From the release you wish to use:
-<https://github.com/myorg/rules_mylang/releases>
+<https://github.com/aspect-build/rules_rollup/releases>
 copy the WORKSPACE snippet into your `WORKSPACE` file.
+
+## Usage
+
+See the API documentation in the [docs](docs/) folder and the example usage in the [example](example/) folder.
+Note that the example also relies on code in the `/WORKSPACE` file in the root of this repo.

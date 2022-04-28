@@ -3,11 +3,10 @@
 load("@aspect_bazel_lib//lib:docs.bzl", "stardoc_with_diff_test", "update_docs")
 
 stardoc_with_diff_test(
-    bzl_library_target = "//mylang:defs",
-    out_label = "//docs:rules.md",
+    name = "rollup",
+    bzl_library_target = "//rollup/private:rollup_bundle",
 )
 
 update_docs(
     name = "update",
-    docs_folder = "docs",
 )

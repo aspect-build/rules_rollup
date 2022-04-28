@@ -1,0 +1,6 @@
+{
+    "private": true,
+    "dependencies": {
+        "@rollup/plugin-node-resolve": "^13.2.1"
+    }
+}

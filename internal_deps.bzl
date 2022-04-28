@@ -7,7 +7,7 @@ statement from these, that's a bug in our distribution.
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-def rules_mylang_internal_deps():
+def rules_rollup_internal_deps():
     "Fetch deps needed for local development"
     maybe(
         http_archive,
@@ -66,6 +66,18 @@ def rules_mylang_internal_deps():
     maybe(
         http_archive,
         name = "aspect_bazel_lib",
-        sha256 = "8c8cf0554376746e2451de85c4a7670cc8d7400c1f091574c1c1ed2a65021a4c",
-        url = "https://github.com/aspect-build/bazel-lib/releases/download/v0.2.6/bazel_lib-0.2.6.tar.gz",
+        sha256 = "2f6f04a002a9f988ae79107a91a8498892fb03bee978a8bf841eb1bd9fded2ea",
+        strip_prefix = "bazel-lib-0.9.8",
+        url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v0.9.8.tar.gz",
+    )
+
+    # Note, this dependency is also in rules_rollup_dependencies shared with users,
+    # but locally we need to load this earlier in WORKSPACE since the definition of that rule
+    # is in the same file that imports the versions.bzl which transitively loads this.
+    maybe(
+        http_archive,
+        name = "aspect_rules_js",
+        sha256 = "e5de2d6aa3c6987875085c381847a216b1053b095ec51c11e97b781309406ad4",
+        strip_prefix = "rules_js-0.5.0",
+        url = "https://github.com/aspect-build/rules_js/archive/refs/tags/v0.5.0.tar.gz",
     )

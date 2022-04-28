@@ -1,9 +1,14 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
+exports_files(
+    ["rollup_bundle.bzl"],
+    visibility = ["//docs:__pkg__"],
+)
+
 bzl_library(
     name = "rollup_bundle",
     srcs = ["rollup_bundle.bzl"],
-    visibility = ["//rollup:__subpackages__"],
+    visibility = ["//:__subpackages__"],
     deps = ["@aspect_bazel_lib//lib:copy_to_bin"],
 )
 

@@ -1,1 +1,1 @@
-require("rollup/dist/bin/rollup")
+require('rollup/dist/bin/rollup')

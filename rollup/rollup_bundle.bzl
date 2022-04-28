@@ -5,7 +5,7 @@ load("//rollup/private:rollup_bundle.bzl", rollup_lib = "lib")
 _rollup_bundle = rule(
     implementation = rollup_lib.implementation,
     attrs = rollup_lib.attrs,
-    outputs = rollup_lib.outputs
+    outputs = rollup_lib.outputs,
 )
 
 def rollup_bundle(**kwargs):
@@ -16,5 +16,3 @@ def rollup_bundle(**kwargs):
         }),
         **kwargs
     )
-
-

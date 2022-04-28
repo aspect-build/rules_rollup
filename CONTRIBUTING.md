@@ -30,13 +30,11 @@ artifact or a version fetched from the internet, run this from this
 directory:
 
 ```sh
-OVERRIDE="--override_repository=rules_rollup=$(pwd)/rules_rollup"
-echo "build $OVERRIDE" >> ~/.bazelrc
-echo "fetch $OVERRIDE" >> ~/.bazelrc
-echo "query $OVERRIDE" >> ~/.bazelrc
+OVERRIDE="--override_repository=aspect_rules_rollup=$(pwd)/rules_rollup"
+echo "common $OVERRIDE" >> ~/.bazelrc
 ```
 
-This means that any usage of `@rules_rollup` on your system will point to this folder.
+This means that any usage of `@aspect_rules_rollup` on your system will point to this folder.
 
 ## Releasing
 

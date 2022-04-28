@@ -1,5 +1,8 @@
 "rollup_bundle"
+
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_file_to_bin_action", "copy_files_to_bin_actions")
+
+_DOC = "FIXME: add docs"
 
 _ATTRS = {
     "args": attr.string_list(
@@ -91,10 +94,10 @@ Otherwise, the outputs are assumed to be a single file.
         doc = "Target that executes the rollup binary",
         executable = True,
         cfg = "exec",
-        default = "@rollup"
+        default = "@rollup",
     ),
     "is_windows": attr.bool(
-        doc = "Internal use only."
+        doc = "Internal use only.",
     ),
     "silent": attr.bool(
         doc = """Whether to execute the rollup binary with the --silent flag, defaults to False.
@@ -202,13 +205,11 @@ def _no_ext(f):
 def _filter_js(files):
     return [f for f in files if f.extension == "js" or f.extension == "mjs"]
 
-
 def _impl(ctx):
-
     srcs = copy_files_to_bin_actions(ctx, ctx.files.srcs, is_windows = ctx.attr.is_windows)
     entry_point = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_point), is_windows = ctx.attr.is_windows)
-    entry_points =  copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_points), is_windows = ctx.attr.is_windows)
-    inputs =  entry_point + entry_points + srcs + ctx.files.deps
+    entry_points = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_points), is_windows = ctx.attr.is_windows)
+    inputs = entry_point + entry_points + srcs + ctx.files.deps
     outputs = [getattr(ctx.outputs, o) for o in dir(ctx.outputs)]
 
     args = ctx.actions.args()
@@ -216,12 +217,10 @@ def _impl(ctx):
     # Add user specified arguments *before* rule supplied arguments
     args.add_all(ctx.attr.args)
 
-
     # List entry point argument first to save some argv space
     # Rollup doc says
     # When provided as the first options, it is equivalent to not prefix them with --input
     entry_points = _desugar_entry_points(ctx.label.name, ctx.attr.entry_point, ctx.attr.entry_points, inputs).items()
-
 
     # If user requests an output_dir, then use output.dir rather than output.file
     if ctx.attr.output_dir:
@@ -235,11 +234,9 @@ def _impl(ctx):
 
     args.add_all(["--format", ctx.attr.format])
 
-
     if ctx.attr.silent:
         # Run the rollup binary with the --silent flag
         args.add("--silent")
-
 
     if ctx.attr.config_file:
         config_file = copy_file_to_bin_action(ctx, ctx.file.config_file, is_windows = ctx.attr.is_windows)
@@ -257,14 +254,21 @@ def _impl(ctx):
         mnemonic = "Rollup",
         env = {
             "BAZEL_BINDIR": ctx.bin_dir.path,
-            "COMPILATION_MODE": ctx.var["COMPILATION_MODE"]
-        }
+            "COMPILATION_MODE": ctx.var["COMPILATION_MODE"],
+        },
     )
     return DefaultInfo(files = depset(outputs))
 
-
-lib = struct(    
+lib = struct(
     implementation = _impl,
     attrs = _ATTRS,
-    outputs = _rollup_outs
+    outputs = _rollup_outs,
+)
+
+# for stardoc
+rollup_bundle = rule(
+    doc = _DOC,
+    implementation = lib.implementation,
+    attrs = lib.attrs,
+    outputs = lib.outputs,
 )

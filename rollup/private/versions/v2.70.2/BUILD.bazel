@@ -1,7 +1,0 @@
-# gazelle:ignore
-exports_files([
-    "package.json",
-    "pnpm-lock.yaml",
-    "node_modules.bzl",
-    "repositories.bzl",
-])

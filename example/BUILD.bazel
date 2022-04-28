@@ -7,7 +7,7 @@ node_modules()
 
 node_package(
     name = "lib",
-    src = "//lib:src",
+    src = "//example/lib:src",
     package = "@rollup_example/lib",
 )
 
@@ -17,9 +17,9 @@ rollup_bundle(
     entry_point = "main.js",
     deps = [
         ":lib",
+        "@npm//@rollup/plugin-node-resolve",
     ],
 )
-
 
 write_source_files(
     name = "bundle_diff",

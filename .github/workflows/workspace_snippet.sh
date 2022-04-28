@@ -16,16 +16,18 @@ http_archive(
     name = "aspect_rules_rollup",
     sha256 = "${SHA}",
     strip_prefix = "${PREFIX}",
-    url = "https://github.com/myorg/rules_rollup/archive/refs/tags/${TAG}.tar.gz",
+    url = "https://github.com/aspect-build/rules_rollup/archive/refs/tags/${TAG}.tar.gz",
 )
+
+load("@aspect_rules_rollup//rollup:repositories.bzl", "rollup_register_toolchains", "rules_rollup_dependencies")
 
 # Fetches the rules_rollup dependencies.
 # If you want to have a different version of some dependency,
 # you should fetch it *before* calling this.
 # Alternatively, you can skip calling this function, so long as you've
 # already fetched all the dependencies.
-load("@aspect_rules_rollup//rollup:repositories.bzl", "rules_rollup_dependencies")
 rules_rollup_dependencies()
 
+rollup_register_toolchains()
 \`\`\`
 EOF

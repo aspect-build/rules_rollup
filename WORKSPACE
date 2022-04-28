@@ -6,34 +6,42 @@ load(":internal_deps.bzl", "rules_rollup_internal_deps")
 
 rules_rollup_internal_deps()
 
-
 # Fetch dependencies which users need as well
-load("//rollup:repositories.bzl", "rules_rollup_dependencies")
+load("//rollup:repositories.bzl", "rollup_register_toolchains", "rules_rollup_dependencies")
 
 rules_rollup_dependencies()
 
-load("//rollup:configure.bzl", "rollup_register_toolchains")
-
 rollup_register_toolchains()
 
-
 # Set-up rules_js
-load("@aspect_rules_js//js:repositories.bzl", "js_dependencies")
+load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
 
-js_dependencies()
+rules_js_dependencies()
 
-load("@aspect_rules_js//js:configure.bzl", "js_configure")
+load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
-js_configure()
+nodejs_register_toolchains(
+    name = "nodejs",
+    node_version = "16.9.0",
+)
 
+load("@aspect_bazel_lib//lib:repositories.bzl", "DEFAULT_YQ_VERSION", "register_yq_toolchains")
 
-# Generates rollup/private/versions/v2.70.2/npm.bzl
+register_yq_toolchains(
+    version = DEFAULT_YQ_VERSION,
+)
+
 load("@aspect_rules_js//js:npm_import.bzl", "translate_pnpm_lock")
 
 translate_pnpm_lock(
-    name = "rollup_npm_deps",
-    pnpm_lock = "//rollup/private/versions/v2.70.2:pnpm-lock.yaml",
+    name = "npm",
+    enable_lifecycle_hooks = False,
+    pnpm_lock = "//example:pnpm-lock.yaml",
 )
+
+load("@npm//:repositories.bzl", "npm_repositories")
+
+npm_repositories()
 
 # For running our own unit tests
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")

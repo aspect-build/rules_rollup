@@ -1,10 +1,11 @@
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("@aspect_rules_js//js:defs.bzl", "js_package")
 
-copy_to_directory(
-    name = "src",
+js_package(
+    name = "lib",
     srcs = [
         "lib.js",
         "package.json",
     ],
+    package = "@rollup_example/lib",
     visibility = ["//visibility:public"],
 )

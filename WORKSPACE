@@ -13,7 +13,10 @@ rules_rollup_dependencies()
 
 load("//rollup:repositories.bzl", "rollup_register_toolchains")
 
-rollup_register_toolchains()
+rollup_register_toolchains(
+    name = "rollup",
+    rollup_version = "v2.70.2",
+)
 
 load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
@@ -32,7 +35,6 @@ load("@aspect_rules_js//js:npm_import.bzl", "translate_pnpm_lock")
 
 translate_pnpm_lock(
     name = "npm",
-    enable_lifecycle_hooks = False,
     pnpm_lock = "//example:pnpm-lock.yaml",
 )
 

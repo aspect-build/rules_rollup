@@ -24,13 +24,13 @@ link_js_packages()
 
 directory_path(
     name = "rollup_entrypoint",
-    directory = ":jsp__rollup__dir",
+    directory = ":direct__rollup__dir",
     path = "dist/bin/rollup",
 )
 
 js_binary(
     name = "{name}",
-    data = ["//:jsp__rollup"],
+    data = ["//:direct__rollup"],
     entry_point = ":rollup_entrypoint",
     visibility = ["//visibility:public"],
 )

@@ -7,8 +7,9 @@ def npm_repositories():
     npm_import(
         name = "npm__rollup__2.70.2",
         integrity = "sha512-EitogNZnfku65I1DD5Mxe8JYRUCy0hkK5X84IlDtUs+O6JRMpRciXTzyCUuX11b5L5pvjH+OmFXiQ3XjabcXgg==",
-        root_path = "",
-        link_paths = ["."],
+        root_package = "",
+        link_workspace = "",
+        link_packages = [""],
         package = "rollup",
         version = "2.70.2",
         transitive_closure = {

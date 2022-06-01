@@ -3,7 +3,7 @@
 These are needed for local dev, and users must install them as well.
 See https://docs.bazel.build/versions/main/skylark/deploying.html#dependencies
 """
-
+load("@aspect_rules_js//js:defs.bzl", "constants", "utils")
 load("//rollup/private:versions.bzl", "TOOL_VERSIONS")
 
 LATEST_VERSION = TOOL_VERSIONS.keys()[-1]
@@ -24,19 +24,22 @@ link_js_packages()
 
 directory_path(
     name = "rollup_entrypoint",
-    directory = ":direct__rollup__dir",
+    directory = ":{direct_link_prefix}{bazel_name}{dir_suffix}",
     path = "dist/bin/rollup",
 )
 
 js_binary(
     name = "{name}",
-    data = ["//:direct__rollup"],
+    data = ["//:{direct_link_prefix}rollup"],
     entry_point = ":rollup_entrypoint",
     visibility = ["//visibility:public"],
 )
 """.format(
         name = repository_ctx.attr.name,
         version = repository_ctx.attr.rollup_version,
+        direct_link_prefix = constants.direct_link_prefix,
+        dir_suffix = constants.dir_suffix,
+        bazel_name = utils.bazel_name("rollup"),
     ))
 
 rollup_repositories = repository_rule(

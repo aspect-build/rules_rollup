@@ -1,11 +1,11 @@
 load("@aspect_rules_rollup//rollup:rollup_bundle.bzl", "rollup_bundle")
-load("@aspect_rules_js//npm:defs.bzl", "link_npm_package")
-load("@npm//:defs.bzl", "link_all_npm_packages")
+load("@aspect_rules_js//npm:defs.bzl", "npm_link_package")
+load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
 
-link_all_npm_packages(name = "node_modules")
+npm_link_all_packages(name = "node_modules")
 
-link_npm_package(
+npm_link_package(
     name = "node_modules/@rollup_example/lib",
     src = "//example/lib",
     root_package = "example",

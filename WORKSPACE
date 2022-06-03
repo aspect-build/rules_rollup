@@ -31,7 +31,7 @@ register_yq_toolchains(
     version = DEFAULT_YQ_VERSION,
 )
 
-load("@aspect_rules_js//js:npm_import.bzl", "translate_pnpm_lock")
+load("@aspect_rules_js//npm:npm_import.bzl", "translate_pnpm_lock")
 
 translate_pnpm_lock(
     name = "npm",

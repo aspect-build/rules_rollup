@@ -1,12 +1,12 @@
 load("@aspect_rules_rollup//rollup:rollup_bundle.bzl", "rollup_bundle")
-load("@aspect_rules_js//js:defs.bzl", "link_js_package")
-load("@npm//:defs.bzl", "link_js_packages")
+load("@aspect_rules_js//npm:defs.bzl", "link_npm_package")
+load("@npm//:defs.bzl", "link_all_npm_packages")
 load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
 
-link_js_packages()
+link_all_npm_packages(name = "node_modules")
 
-link_js_package(
-    name = "link_lib",
+link_npm_package(
+    name = "node_modules/@rollup_example/lib",
     src = "//example/lib",
     root_package = "example",
 )
@@ -17,8 +17,8 @@ rollup_bundle(
     entry_point = "main.js",
     sourcemap = "false",
     deps = [
-        ":link_lib",
-        "@npm//example/@rollup/plugin-node-resolve",
+        ":node_modules/@rollup_example/lib",
+        "//example:node_modules/@rollup/plugin-node-resolve",
     ],
 )
 

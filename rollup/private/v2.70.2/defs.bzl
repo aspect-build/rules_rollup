@@ -2,39 +2,63 @@
 
 # buildifier: disable=bzl-visibility
 load("@aspect_rules_js//npm/private:npm_linked_packages.bzl", "npm_linked_packages")
-load("@npm__rollup__2.70.2__links//:defs.bzl", link_0 = "npm_link_package")
+load("@npm__rollup__2.70.2__links//:defs.bzl", link_0_direct = "npm_link_imported_package_direct", link_0_store = "npm_link_imported_package_store")
 
-def npm_link_all_packages(name = "node_modules"):
+def npm_link_all_packages(name = "node_modules", imported_links = []):
     """Generated list of npm_link_package() target generators and first-party linked packages corresponding to the packages in @//:pnpm-lock.yaml
 
     Args:
         name: name of catch all target to generate for all packages linked
+        imported_links: optional list link functions from manually imported packages
+            that were fetched with npm_import rules,
+
+            For example,
+
+            ```
+            load("@npm//:defs.bzl", "npm_link_all_packages")
+            load("@npm_meaning-of-life__links//:defs.bzl", npm_link_meaning_of_life = "npm_link_imported_package")
+
+            npm_link_all_packages(
+                name = "node_modules",
+                imported_links = [
+                    npm_link_meaning_of_life,
+                ],
+            )```
     """
+
     root_package = ""
-    link_packages = [""]
+    direct_packages = [""]
     is_root = native.package_name() == root_package
-    is_direct = native.package_name() in link_packages
+    is_direct = native.package_name() in direct_packages
     if not is_root and not is_direct:
         msg = "The npm_link_all_packages() macro loaded from @npm//:defs.bzl and called in bazel package '%s' may only be called in the bazel package(s) corresponding to the root package '' and packages ['']" % native.package_name()
         fail(msg)
     direct_targets = []
     scoped_direct_targets = {}
 
-    direct_targets.append(link_0(name = "{}/rollup".format(name), direct = None, fail_if_no_link = False))
+    for link_fn in imported_links:
+        new_direct_targets, new_scoped_targets = link_fn(name)
+        direct_targets.extend(new_direct_targets)
+        for _scope, _targets in new_scoped_targets.items():
+            scoped_direct_targets[_scope] = scoped_direct_targets[_scope] + _targets if _scope in scoped_direct_targets else _targets
+
+    if is_root:
+        link_0_store(name = "{}/rollup".format(name))
+    if is_direct:
+        if native.package_name() == "":
+            direct_targets.append(link_0_direct(name = "{}/rollup".format(name)))
 
     for scope, scoped_targets in scoped_direct_targets.items():
-        direct_scoped_targets = [t for t in scoped_targets if t]
-        if direct_scoped_targets:
-            npm_linked_packages(
-                name = "{}/{}".format(name, scope),
-                srcs = direct_scoped_targets,
-                tags = ["manual"],
-                visibility = ["//visibility:public"],
-            )
+        npm_linked_packages(
+            name = "{}/{}".format(name, scope),
+            srcs = scoped_targets,
+            tags = ["manual"],
+            visibility = ["//visibility:public"],
+        )
 
     npm_linked_packages(
         name = name,
-        srcs = [t for t in direct_targets if t],
+        srcs = direct_targets,
         tags = ["manual"],
         visibility = ["//visibility:public"],
     )

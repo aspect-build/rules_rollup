@@ -168,14 +168,14 @@ def _desugar_entry_points(name, entry_point, entry_points, inputs):
 
 def _resolve_js_input(f, inputs):
     if f.extension == "js" or f.extension == "mjs":
-        return f
+        return f.short_path
 
     # look for corresponding js file in inputs
     no_ext = _no_ext(f)
     for i in inputs:
         if i.extension == "js" or i.extension == "mjs":
             if _no_ext(i) == no_ext:
-                return i
+                return i.short_path
     fail("Could not find corresponding javascript entry point for %s. Add the %s.js to your deps." % (f.path, no_ext))
 
 def _rollup_outs(sourcemap, name, entry_point, entry_points, output_dir):

@@ -1,4 +1,4 @@
-load("@aspect_rules_rollup//rollup:rollup_bundle.bzl", "rollup_bundle")
+load("@aspect_rules_rollup//rollup:defs.bzl", "rollup_bundle")
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
 
 rollup_bundle(

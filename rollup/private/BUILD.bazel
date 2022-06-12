@@ -1,5 +1,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
+# gazelle:exclude v*.*.*/*
+
 exports_files(
     ["rollup_bundle.bzl"],
     visibility = ["//docs:__pkg__"],
@@ -12,6 +14,7 @@ bzl_library(
     deps = ["@aspect_bazel_lib//lib:copy_to_bin"],
 )
 
+# gazelle:ignore
 bzl_library(
     name = "versions",
     srcs = ["versions.bzl"],

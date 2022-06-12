@@ -1,3 +1,17 @@
-load(":versions_test.bzl", "versions_test_suite")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@aspect_rules_rollup//rollup:rollup_bundle.bzl", "rollup_bundle")
 
-versions_test_suite(name = "versions_test")
+write_file(
+    name = "gen",
+    out = "gen.js",
+    content = ["console.log('foo')"],
+)
+
+rollup_bundle(
+    name = "bundle",
+    config_file = "rollup.config.js",
+    deps = ["gen"],
+    entry_points = {
+        "gen.js": "index",
+    },
+)

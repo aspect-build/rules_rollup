@@ -3,7 +3,6 @@ load("@bazel_skylib//rules:build_test.bzl", "build_test")
 
 rollup_bundle(
     name = "bundle",
-    config_file = "config.js",
     entry_point = "main.js",
 )
 

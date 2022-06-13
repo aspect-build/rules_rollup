@@ -9,7 +9,6 @@ write_file(
 
 rollup_bundle(
     name = "bundle",
-    config_file = "rollup.config.js",
     entry_points = {
         "gen.js": "index",
     },

@@ -18,7 +18,7 @@ Passed to the `--config` option, see [the config doc](https://rollupjs.org/guide
 If not set, a default basic Rollup config is used.
 """,
         allow_single_file = True,
-        default = "//packages/rollup:rollup.config.js",
+        default = "//rollup:rollup.config",
     ),
     "deps": attr.label_list(
         doc = """Other libraries that are required by the code, or by the rollup.config.js""",
@@ -127,6 +127,12 @@ You must not repeat file(s) passed to entry_point/entry_points.
         allow_files = True,
     ),
 }
+
+def _output_relative_path(f):
+    "Give the path from bazel-out/[arch]/bin to the given File object"
+    if f.short_path.startswith("../"):
+        return "external/" + f.short_path[3:]
+    return f.short_path
 
 def _desugar_entry_point_names(name, entry_point, entry_points):
     """Users can specify entry_point (sugar) or entry_points (long form).
@@ -240,7 +246,7 @@ def _impl(ctx):
 
     if ctx.attr.config_file:
         config_file = copy_file_to_bin_action(ctx, ctx.file.config_file, is_windows = ctx.attr.is_windows)
-        args.add_all(["--config", config_file.short_path])
+        args.add_all(["--config", _output_relative_path(config_file)])
         inputs.append(config_file)
 
     if (ctx.attr.sourcemap and ctx.attr.sourcemap != "false"):

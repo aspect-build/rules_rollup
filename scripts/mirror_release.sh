@@ -53,4 +53,4 @@ npm_repositories()
 EOF
 bazel fetch @npm//:all
 cp $(bazel info output_base)/external/npm/{defs,repositories}.bzl "$out"
-echo "Mirrored rollup versior $version to $out. Now add it to rollup/private/versions.bzl"
+echo "Mirrored rollup version $version to $out. Now add it to rollup/private/versions.bzl"

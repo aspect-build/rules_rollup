@@ -24,7 +24,10 @@ bzl_library(
     name = "defs",
     srcs = ["defs.bzl"],
     visibility = ["//visibility:public"],
-    deps = ["//rollup/private:rollup_bundle"],
+    deps = [
+        "//rollup/private:rollup_bundle",
+        "@aspect_rules_js//js:libs",
+    ],
 )
 
 bzl_library(

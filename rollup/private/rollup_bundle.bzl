@@ -1,6 +1,8 @@
 "rollup_bundle"
 
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_file_to_bin_action", "copy_files_to_bin_actions")
+load("@aspect_rules_js//js:libs.bzl", "js_lib_helpers")
+load("@aspect_rules_js//js:providers.bzl", "JsInfo", "js_info")
 
 _DOC = "FIXME: add docs"
 
@@ -22,7 +24,9 @@ If not set, a default basic Rollup config is used.
     ),
     "deps": attr.label_list(
         doc = """Other libraries that are required by the code, or by the rollup.config.js""",
+        providers = [JsInfo],
     ),
+    "data": js_lib_helpers.JS_LIBRARY_DATA_ATTR,
     "entry_point": attr.label(
         doc = """The bundle's entry point (e.g. your main.js or app.js or index.js).
 This is just a shortcut for the `entry_points` attribute with a single output chunk named the same as the rule.
@@ -126,6 +130,7 @@ You must not repeat file(s) passed to entry_point/entry_points.
         # Don't try to constrain the filenames, could be json, svg, whatever
         allow_files = True,
     ),
+    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
 def _output_relative_path(f):
@@ -212,11 +217,18 @@ def _filter_js(files):
     return [f for f in files if f.extension == "js" or f.extension == "mjs"]
 
 def _impl(ctx):
-    srcs = copy_files_to_bin_actions(ctx, ctx.files.srcs, is_windows = ctx.attr.is_windows)
-    entry_point = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_point), is_windows = ctx.attr.is_windows)
-    entry_points = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_points), is_windows = ctx.attr.is_windows)
-    inputs = entry_point + entry_points + srcs + ctx.files.deps
-    outputs = [getattr(ctx.outputs, o) for o in dir(ctx.outputs)]
+    is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
+
+    input_sources = copy_files_to_bin_actions(ctx, ctx.files.srcs, is_windows = is_windows)
+    input_sources.extend(js_lib_helpers.gather_files_from_js_providers(
+        targets = ctx.attr.srcs + ctx.attr.deps,
+        include_transitive_sources = True,
+        include_declarations = False,
+        include_npm_linked_packages = True,
+    ))
+    entry_point = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_point), is_windows = is_windows)
+    entry_points = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_points), is_windows = is_windows)
+    inputs = entry_point + entry_points + input_sources + ctx.files.deps
 
     args = ctx.actions.args()
 
@@ -228,15 +240,17 @@ def _impl(ctx):
     # When provided as the first options, it is equivalent to not prefix them with --input
     entry_points = _desugar_entry_points(ctx.label.name, ctx.attr.entry_point, ctx.attr.entry_points, inputs).items()
 
+    output_sources = [getattr(ctx.outputs, o) for o in dir(ctx.outputs)]
+
     # If user requests an output_dir, then use output.dir rather than output.file
     if ctx.attr.output_dir:
-        outputs.append(ctx.actions.declare_directory(ctx.label.name))
+        output_sources.append(ctx.actions.declare_directory(ctx.label.name))
         for entry_point in entry_points:
             args.add_joined([entry_point[1], entry_point[0]], join_with = "=")
-        args.add_all(["--output.dir", outputs[0].short_path])
+        args.add_all(["--output.dir", output_sources[0].short_path])
     else:
         args.add(entry_points[0][0])
-        args.add_all(["--output.file", outputs[0].short_path])
+        args.add_all(["--output.file", output_sources[0].short_path])
 
     args.add_all(["--format", ctx.attr.format])
 
@@ -245,7 +259,7 @@ def _impl(ctx):
         args.add("--silent")
 
     if ctx.attr.config_file:
-        config_file = copy_file_to_bin_action(ctx, ctx.file.config_file, is_windows = ctx.attr.is_windows)
+        config_file = copy_file_to_bin_action(ctx, ctx.file.config_file, is_windows = is_windows)
         args.add_all(["--config", _output_relative_path(config_file)])
         inputs.append(config_file)
 
@@ -256,14 +270,51 @@ def _impl(ctx):
         executable = ctx.executable.rollup,
         arguments = [args],
         inputs = inputs,
-        outputs = outputs,
+        outputs = output_sources,
         mnemonic = "Rollup",
         env = {
             "BAZEL_BINDIR": ctx.bin_dir.path,
             "COMPILATION_MODE": ctx.var["COMPILATION_MODE"],
         },
     )
-    return DefaultInfo(files = depset(outputs))
+
+    npm_linked_packages = js_lib_helpers.gather_npm_linked_packages(
+        srcs = ctx.attr.srcs,
+        deps = [],
+    )
+
+    npm_package_stores = js_lib_helpers.gather_npm_package_stores(
+        targets = ctx.attr.data,
+    )
+
+    runfiles = js_lib_helpers.gather_runfiles(
+        ctx = ctx,
+        sources = output_sources,
+        data = ctx.attr.data,
+        # Since we're bundling, we don't propogate any transitive runfiles from dependencies
+        deps = [],
+    )
+
+    return [
+        DefaultInfo(
+            files = depset(output_sources),
+            runfiles = runfiles,
+        ),
+        js_info(
+            npm_linked_packages = npm_linked_packages.direct,
+            npm_package_stores = npm_package_stores.direct,
+            sources = output_sources,
+            # Since we're bundling, we don't propogate linked npm packages from dependencies since
+            # they are bundled and the dependencies are dropped. If a subset of linked npm
+            # dependencies are not bundled it is up the the user to re-specify these in `data` if
+            # they are runtime dependencies to progagate to binary rules or `srcs` if they are to be
+            # propagated to downstream build targets.
+            transitive_npm_linked_packages = npm_linked_packages.direct,
+            transitive_npm_package_stores = npm_package_stores.transitive,
+            # Since we're bundling, we don't propogate any transitive sources from dependencies
+            transitive_sources = output_sources,
+        ),
+    ]
 
 lib = struct(
     implementation = _impl,

@@ -11,7 +11,11 @@ bzl_library(
     name = "rollup_bundle",
     srcs = ["rollup_bundle.bzl"],
     visibility = ["//:__subpackages__"],
-    deps = ["@aspect_bazel_lib//lib:copy_to_bin"],
+    deps = [
+        "@aspect_bazel_lib//lib:copy_to_bin",
+        "@aspect_rules_js//js:libs",
+        "@aspect_rules_js//js:providers",
+    ],
 )
 
 # gazelle:ignore

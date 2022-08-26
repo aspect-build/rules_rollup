@@ -220,12 +220,6 @@ def _impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
 
     input_sources = copy_files_to_bin_actions(ctx, ctx.files.srcs, is_windows = is_windows)
-    input_sources.extend(js_lib_helpers.gather_files_from_js_providers(
-        targets = ctx.attr.srcs + ctx.attr.deps,
-        include_transitive_sources = True,
-        include_declarations = False,
-        include_npm_linked_packages = True,
-    ))
     entry_point = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_point), is_windows = is_windows)
     entry_points = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_points), is_windows = is_windows)
     inputs = entry_point + entry_points + input_sources + ctx.files.deps
@@ -269,7 +263,15 @@ def _impl(ctx):
     ctx.actions.run(
         executable = ctx.executable.rollup,
         arguments = [args],
-        inputs = inputs,
+        inputs = depset(
+            inputs,
+            transitive = [js_lib_helpers.gather_files_from_js_providers(
+                targets = ctx.attr.srcs + ctx.attr.deps,
+                include_transitive_sources = True,
+                include_declarations = False,
+                include_npm_linked_packages = True,
+            )],
+        ),
         outputs = output_sources,
         mnemonic = "Rollup",
         env = {
@@ -283,13 +285,15 @@ def _impl(ctx):
         deps = [],
     )
 
-    npm_package_stores = js_lib_helpers.gather_npm_package_stores(
+    npm_package_store_deps = js_lib_helpers.gather_npm_package_store_deps(
         targets = ctx.attr.data,
     )
 
+    output_sources_depset = depset(output_sources)
+
     runfiles = js_lib_helpers.gather_runfiles(
         ctx = ctx,
-        sources = output_sources,
+        sources = output_sources_depset,
         data = ctx.attr.data,
         # Since we're bundling, we don't propogate any transitive runfiles from dependencies
         deps = [],
@@ -297,22 +301,23 @@ def _impl(ctx):
 
     return [
         DefaultInfo(
-            files = depset(output_sources),
+            files = output_sources_depset,
             runfiles = runfiles,
         ),
         js_info(
+            npm_linked_package_files = npm_linked_packages.direct_files,
             npm_linked_packages = npm_linked_packages.direct,
-            npm_package_stores = npm_package_stores.direct,
-            sources = output_sources,
+            npm_package_store_deps = npm_package_store_deps,
+            sources = output_sources_depset,
             # Since we're bundling, we don't propogate linked npm packages from dependencies since
             # they are bundled and the dependencies are dropped. If a subset of linked npm
             # dependencies are not bundled it is up the the user to re-specify these in `data` if
             # they are runtime dependencies to progagate to binary rules or `srcs` if they are to be
             # propagated to downstream build targets.
+            transitive_npm_linked_package_files = npm_linked_packages.direct_files,
             transitive_npm_linked_packages = npm_linked_packages.direct,
-            transitive_npm_package_stores = npm_package_stores.transitive,
             # Since we're bundling, we don't propogate any transitive sources from dependencies
-            transitive_sources = output_sources,
+            transitive_sources = output_sources_depset,
         ),
     ]
 

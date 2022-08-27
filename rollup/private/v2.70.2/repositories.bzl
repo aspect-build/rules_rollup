@@ -13,6 +13,7 @@ def npm_repositories():
         },
         package = "rollup",
         version = "2.70.2",
+        lifecycle_hooks_no_sandbox = True,
         integrity = "sha512-EitogNZnfku65I1DD5Mxe8JYRUCy0hkK5X84IlDtUs+O6JRMpRciXTzyCUuX11b5L5pvjH+OmFXiQ3XjabcXgg==",
         transitive_closure = {
             "rollup": ["2.70.2"],

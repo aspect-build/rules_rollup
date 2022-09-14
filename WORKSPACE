@@ -25,7 +25,9 @@ nodejs_register_toolchains(
     node_version = "16.9.0",
 )
 
-load("@aspect_bazel_lib//lib:repositories.bzl", "DEFAULT_YQ_VERSION", "register_yq_toolchains")
+load("@aspect_bazel_lib//lib:repositories.bzl", "DEFAULT_YQ_VERSION", "aspect_bazel_lib_dependencies", "register_yq_toolchains")
+
+aspect_bazel_lib_dependencies(override_local_config_platform = True)
 
 register_yq_toolchains(
     version = DEFAULT_YQ_VERSION,

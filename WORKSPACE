@@ -11,12 +11,13 @@ load("//rollup:dependencies.bzl", "rules_rollup_dependencies")
 # Fetch dependencies which users need as well
 rules_rollup_dependencies()
 
-load("//rollup:repositories.bzl", "rollup_register_toolchains")
+load("//rollup:repositories.bzl", "rollup_repositories")
 
-rollup_register_toolchains(
-    name = "rollup",
-    rollup_version = "v2.70.2",
-)
+rollup_repositories(name = "rollup")
+
+load("@rollup//:npm_repositories.bzl", rollup_npm_repositories = "npm_repositories")
+
+rollup_npm_repositories()
 
 load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
@@ -56,6 +57,6 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 go_rules_dependencies()
 
-go_register_toolchains(version = "1.17.2")
+go_register_toolchains(version = "1.19.3")
 
 gazelle_dependencies()

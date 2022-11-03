@@ -1,7 +1,7 @@
-"Mirrored versions of rollup npm packages"
+"""List of mirrored versions"""
 
-load("v2.70.2/repositories.bzl", v2_70_2 = "npm_repositories")
-
-TOOL_VERSIONS = {
-    "v2.70.2": v2_70_2,
-}
+# Run /scripts/mirror_release.sh to add new versions.
+# Versions should be descending order so TOOL_VERSIONS[0] is the latest version.
+TOOL_VERSIONS = [
+    "v2.70.2",
+]

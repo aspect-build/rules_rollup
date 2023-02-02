@@ -10,4 +10,5 @@ mkdir -p "$out"
 cd $(mktemp -d)
 npx pnpm install "rollup@$version" --lockfile-only
 cp pnpm-lock.yaml "$out"
+cp package.json "$out"
 echo "Mirrored rollup version $version to $out. Now add it to rollup/private/versions.bzl"

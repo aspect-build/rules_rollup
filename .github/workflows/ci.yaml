@@ -63,11 +63,11 @@ jobs:
                 folder:
                     - '.'
                     - 'e2e/workspace'
-            exclude:
-                # Don't test macos with Bazel 5 to minimize macOS minutes (billed at 10X)
-                # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
-                - os: macos-latest
-                  bazelversion: 5.3.2
+                exclude:
+                    # Don't test macos with Bazel 5 to minimize macOS minutes (billed at 10X)
+                    # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
+                    - os: macos-latest
+                      bazelversion: 5.3.2
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:

@@ -1,5 +1,5 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("@aspect_rules_rollup//rollup:defs.bzl", "rollup_bundle")
+load("@aspect_rules_rollup//rollup:defs.bzl", "rollup")
 load("@aspect_rules_js//js:defs.bzl", "js_library")
 
 write_file(
@@ -13,10 +13,11 @@ js_library(
     srcs = ["gen"],
 )
 
-rollup_bundle(
+rollup(
     name = "bundle",
     entry_points = {
         "gen.js": "index",
     },
+    node_modules = "//:node_modules",
     deps = [":lib"],
 )

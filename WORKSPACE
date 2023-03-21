@@ -11,20 +11,25 @@ load("//rollup:dependencies.bzl", "rules_rollup_dependencies")
 # Fetch dependencies which users need as well
 rules_rollup_dependencies()
 
-load("//rollup:repositories.bzl", "rollup_repositories")
-
-rollup_repositories(name = "rollup")
-
-load("@rollup//:npm_repositories.bzl", rollup_npm_repositories = "npm_repositories")
-
-rollup_npm_repositories()
-
 load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
 nodejs_register_toolchains(
     name = "nodejs",
     node_version = "16.9.0",
 )
+
+load("@aspect_rules_js//npm:npm_import.bzl", "npm_translate_lock")
+
+npm_translate_lock(
+    name = "npm",
+    npmrc = "//:.npmrc",
+    pnpm_lock = "//:pnpm-lock.yaml",
+    verify_node_modules_ignored = "//:.bazelignore",
+)
+
+load("@npm//:repositories.bzl", "npm_repositories")
+
+npm_repositories()
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "DEFAULT_YQ_VERSION", "aspect_bazel_lib_dependencies", "register_yq_toolchains")
 
@@ -33,17 +38,6 @@ aspect_bazel_lib_dependencies(override_local_config_platform = True)
 register_yq_toolchains(
     version = DEFAULT_YQ_VERSION,
 )
-
-load("@aspect_rules_js//npm:npm_import.bzl", "npm_translate_lock")
-
-npm_translate_lock(
-    name = "npm",
-    pnpm_lock = "//example:pnpm-lock.yaml",
-)
-
-load("@npm//:repositories.bzl", "npm_repositories")
-
-npm_repositories()
 
 # For running our own unit tests
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")

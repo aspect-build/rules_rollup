@@ -18,14 +18,6 @@ load("@aspect_rules_rollup//rollup:dependencies.bzl", "rules_rollup_dependencies
 # already fetched all the dependencies.
 rules_rollup_dependencies()
 
-load("@aspect_rules_rollup//rollup:repositories.bzl", "rollup_repositories")
-
-rollup_repositories(name = "rollup")
-
-load("@rollup//:npm_repositories.bzl", rollup_npm_repositories = "npm_repositories")
-
-rollup_npm_repositories()
-
 # Fetch and register a node toolchain, if you haven't already
 load("@rules_nodejs//nodejs:repositories.bzl", "DEFAULT_NODE_VERSION", "nodejs_register_toolchains")
 
@@ -33,3 +25,16 @@ nodejs_register_toolchains(
     name = "node",
     node_version = DEFAULT_NODE_VERSION,
 )
+
+load("@aspect_rules_js//npm:npm_import.bzl", "npm_translate_lock")
+
+npm_translate_lock(
+    name = "npm",
+    npmrc = "//:.npmrc",
+    pnpm_lock = "//:pnpm-lock.yaml",
+    verify_node_modules_ignored = "//:.bazelignore",
+)
+
+load("@npm//:repositories.bzl", "npm_repositories")
+
+npm_repositories()

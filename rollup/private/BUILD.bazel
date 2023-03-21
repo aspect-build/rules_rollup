@@ -3,24 +3,17 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 # gazelle:exclude v*.*.*/*
 
 exports_files(
-    ["rollup_bundle.bzl"],
+    ["rollup.bzl"],
     visibility = ["//docs:__pkg__"],
 )
 
 bzl_library(
-    name = "rollup_bundle",
-    srcs = ["rollup_bundle.bzl"],
+    name = "rollup",
+    srcs = ["rollup.bzl"],
     visibility = ["//:__subpackages__"],
     deps = [
         "@aspect_bazel_lib//lib:copy_to_bin",
         "@aspect_rules_js//js:libs",
         "@aspect_rules_js//js:providers",
     ],
-)
-
-# gazelle:ignore
-bzl_library(
-    name = "versions",
-    srcs = ["versions.bzl"],
-    visibility = ["//rollup:__subpackages__"],
 )

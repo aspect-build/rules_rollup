@@ -10,22 +10,12 @@ copy_to_bin(
 )
 
 bzl_library(
-    name = "repositories",
-    srcs = ["repositories.bzl"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//rollup/private:versions",
-        "@bazel_tools//tools/build_defs/repo:http.bzl",
-        "@bazel_tools//tools/build_defs/repo:utils.bzl",
-    ],
-)
-
-bzl_library(
     name = "defs",
     srcs = ["defs.bzl"],
     visibility = ["//visibility:public"],
     deps = [
-        "//rollup/private:rollup_bundle",
+        "//rollup/private:rollup",
+        "@aspect_rules_js//js:defs",
         "@aspect_rules_js//js:libs",
     ],
 )

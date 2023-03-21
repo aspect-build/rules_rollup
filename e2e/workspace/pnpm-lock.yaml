@@ -1,10 +1,10 @@
 lockfileVersion: 5.4
 
 specifiers:
-  rollup: 2.70.2
+  rollup: 3.20.0
 
-dependencies:
-  rollup: 2.70.2
+devDependencies:
+  rollup: 3.20.0
 
 packages:
 
@@ -13,13 +13,13 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
-    dev: false
+    dev: true
     optional: true
 
-  /rollup/2.70.2:
-    resolution: {integrity: sha512-EitogNZnfku65I1DD5Mxe8JYRUCy0hkK5X84IlDtUs+O6JRMpRciXTzyCUuX11b5L5pvjH+OmFXiQ3XjabcXgg==}
-    engines: {node: '>=10.0.0'}
+  /rollup/3.20.0:
+    resolution: {integrity: sha512-YsIfrk80NqUDrxrjWPXUa7PWvAfegZEXHuPsEZg58fGCdjL1I9C1i/NaG+L+27kxxwkrG/QEDEQc8s/ynXWWGQ==}
+    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
-    dev: false
+    dev: true

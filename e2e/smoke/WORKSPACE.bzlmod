@@ -1,0 +1,2 @@
+# Marker file that this is the root of a Bazel workspace
+# This file shadows WORKSPACE.bazel when --enable_bzlmod is true

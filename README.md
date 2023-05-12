@@ -1,8 +1,5 @@
 # Bazel rules for rollup
 
-**EXPERIMENTAL** this code is currently pre-release and not subject to any stability guarantee.
-It could be archived or there could be major breaking changes.
-
 This is a pure-starlark distribution which replaces the `@bazel/rollup` npm package.
 It's meant for use with aspect-build/rules_js, which has a pnpm-based layout for node_modules.
 

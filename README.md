@@ -11,5 +11,5 @@ copy the WORKSPACE snippet into your `WORKSPACE` file.
 
 ## Usage
 
-See the [API documentation](./docs/rollup.md) and the example usage in the [example](example/) folder.
+See the [API documentation](./docs/rollup) and the example usage in the [example](https://github.com/aspect-build/rules_rollup/tree/main/example/) folder.
 Note that the example also relies on code in the `/WORKSPACE` file in the root of this repo.

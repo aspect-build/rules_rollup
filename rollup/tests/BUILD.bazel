@@ -1,7 +1,7 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_rollup//rollup:defs.bzl", "rollup")
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("@aspect_rules_rollup//rollup:defs.bzl", "rollup")
-load("@aspect_rules_js//js:defs.bzl", "js_library")
 
 write_file(
     name = "gen",

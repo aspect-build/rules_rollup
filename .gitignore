@@ -1,3 +1,11 @@
 bazel-*
 .bazelrc.user
 node_modules
+
+# Don't share lockfile for now. It is unstable.
+# https://github.com/bazelbuild/bazel/issues/19026
+# https://github.com/bazelbuild/bazel/issues/19621
+# https://github.com/bazelbuild/bazel/issues/19971
+# https://github.com/bazelbuild/bazel/issues/20272
+# https://github.com/bazelbuild/bazel/issues/20369
+MODULE.bazel.lock

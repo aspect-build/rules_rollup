@@ -1,5 +1,6 @@
 "wrapper macro for rollup rule"
 
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS")
 load("@aspect_bazel_lib//lib:directory_path.bzl", "directory_path")
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("//rollup/private:rollup.bzl", rollup_lib = "lib")
@@ -8,6 +9,7 @@ _rollup = rule(
     implementation = rollup_lib.implementation,
     attrs = rollup_lib.attrs,
     outputs = rollup_lib.outputs,
+    toolchains = COPY_FILE_TO_BIN_TOOLCHAINS,
 )
 
 def rollup(

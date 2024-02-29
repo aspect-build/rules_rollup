@@ -18,6 +18,10 @@ load("@aspect_rules_rollup//rollup:dependencies.bzl", "rules_rollup_dependencies
 # already fetched all the dependencies.
 rules_rollup_dependencies()
 
+load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
+
+rules_js_dependencies()
+
 # Fetch and register a node toolchain, if you haven't already
 load("@rules_nodejs//nodejs:repositories.bzl", "DEFAULT_NODE_VERSION", "nodejs_register_toolchains")
 

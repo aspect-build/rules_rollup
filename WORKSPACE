@@ -11,6 +11,10 @@ load("//rollup:dependencies.bzl", "rules_rollup_dependencies")
 # Fetch dependencies which users need as well
 rules_rollup_dependencies()
 
+load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
+
+rules_js_dependencies()
+
 load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
 nodejs_register_toolchains(
@@ -33,7 +37,7 @@ npm_repositories()
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "DEFAULT_YQ_VERSION", "aspect_bazel_lib_dependencies", "register_yq_toolchains")
 
-aspect_bazel_lib_dependencies(override_local_config_platform = True)
+aspect_bazel_lib_dependencies()
 
 register_yq_toolchains(
     version = DEFAULT_YQ_VERSION,

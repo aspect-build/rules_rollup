@@ -72,6 +72,9 @@ jobs:
                     # Don't test bzlmod with Bazel 5 (not supported)
                     - bazelversion: 5.3.2
                       bzlmodEnabled: true
+                    # Broken as Bazel 5 doesn't have @local_config_platform//:constraints.bzl
+                    - bazelversion: 5.3.2
+                      folder: .
 
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:

@@ -11,6 +11,10 @@ load("//rollup:dependencies.bzl", "rules_rollup_dependencies")
 # Fetch dependencies which users need as well
 rules_rollup_dependencies()
 
+load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
+
+rules_js_dependencies()
+
 load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
 nodejs_register_toolchains(

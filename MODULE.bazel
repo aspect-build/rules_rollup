@@ -24,7 +24,9 @@ rollup.toolchain(
 )
 use_repo(rollup, "rollup")
 
-bazel_dep(name = "buildifier_prebuilt", version = "6.1.2", dev_dependency = True)
+####### Dev dependencies ########
+
+bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
 
 npm = use_extension(
     "@aspect_rules_js//npm:extensions.bzl",

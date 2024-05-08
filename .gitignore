@@ -2,7 +2,8 @@ bazel-*
 .bazelrc.user
 node_modules
 
-# Don't share lockfile for now. It is unstable.
+# Don't commit lockfile for now as it is unstable. Do allow for it to be
+# created, however, since it gives a performance boost for local development.
 # https://github.com/bazelbuild/bazel/issues/19026
 # https://github.com/bazelbuild/bazel/issues/19621
 # https://github.com/bazelbuild/bazel/issues/19971

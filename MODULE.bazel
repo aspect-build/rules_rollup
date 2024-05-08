@@ -6,7 +6,7 @@ module(
     compatibility_level = 1,
 )
 
-# Lower-bound (minimum) versions of direct dependencies
+# Lower-bounds (minimum) versions for direct runtime dependencies
 bazel_dep(name = "bazel_skylib", version = "1.3.0")
 
 # Need feat: backport 2.x features for interoperability by @kormide in #657
@@ -28,11 +28,7 @@ use_repo(rollup, "rollup")
 
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
 
-npm = use_extension(
-    "@aspect_rules_js//npm:extensions.bzl",
-    "npm",
-    dev_dependency = True,
-)
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)
 npm.npm_translate_lock(
     name = "npm",
     npmrc = "//:.npmrc",

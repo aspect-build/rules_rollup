@@ -147,7 +147,7 @@ def _impl(ctx):
     if ctx.attr.output_dir:
         output_sources.append(ctx.actions.declare_directory(ctx.label.name))
         for entry_point in entry_points:
-            args.add_joined([entry_point[1], entry_point[0]], join_with = "=")
+            args.add_joined([entry_point[1], entry_point[0].short_path], join_with = "=")
         args.add_all(["--output.dir", output_sources[0].short_path])
     else:
         args.add(entry_points[0][0])

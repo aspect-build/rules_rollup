@@ -11,9 +11,9 @@ def rules_rollup_dependencies():
 
     http_archive(
         name = "aspect_bazel_lib",
-        sha256 = "a272d79bb0ac6b6965aa199b1f84333413452e87f043b53eca7f347a23a478e8",
-        strip_prefix = "bazel-lib-2.9.3",
-        url = "https://github.com/bazel-contrib/bazel-lib/releases/download/v2.9.3/bazel-lib-v2.9.3.tar.gz",
+        sha256 = "c96db69dd2714a37f3298338a1a42b27e3a2696c3b36dd4441b9bf7a1a12bee0",
+        strip_prefix = "bazel-lib-2.11.0",
+        url = "https://github.com/bazel-contrib/bazel-lib/releases/download/v2.11.0/bazel-lib-v2.11.0.tar.gz",
     )
 
     http_archive(

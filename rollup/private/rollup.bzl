@@ -1,6 +1,7 @@
 "rollup"
 
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "COPY_FILE_TO_BIN_TOOLCHAINS", "copy_file_to_bin_action", "copy_files_to_bin_actions")
+load("@aspect_bazel_lib//lib:paths.bzl", "to_output_relative_path")
 load("@aspect_rules_js//js:libs.bzl", "js_lib_helpers")
 load("@aspect_rules_js//js:providers.bzl", "JsInfo", "js_info")
 
@@ -43,12 +44,6 @@ _ATTRS = {
     ),
 }
 
-def _output_relative_path(f):
-    "Give the path from bazel-out/[arch]/bin to the given File object"
-    if f.short_path.startswith("../"):
-        return "external/" + f.short_path[3:]
-    return f.short_path
-
 def _desugar_entry_point_names(name, entry_point, entry_points):
     """Users can specify entry_point (sugar) or entry_points (long form).
 
@@ -75,26 +70,39 @@ def _desugar_entry_points(name, entry_point, entry_points, inputs):
     names = _desugar_entry_point_names(name, entry_point.label if entry_point else None, entry_points)
 
     if entry_point:
-        return {_resolve_js_input(entry_point.files.to_list()[0], inputs): names[0]}
+        file = _find_copied_file(entry_point.files.to_list()[0], inputs)
+        return {_resolve_js_input(file, inputs): names[0]}
 
     result = {}
     for ep in entry_points.items():
         entry_point = ep[0]
         name = ep[1]
-        f = entry_point.files.to_list()
-        if len(f) != 1:
-            fail("keys in rollup#entry_points must provide one file, but %s has %s" % (entry_point.label, len(f)))
-        result[_resolve_js_input(f[0], inputs)] = name
+        files = entry_point.files.to_list()
+        if len(files) != 1:
+            fail("keys in rollup#entry_points must provide one file, but %s has %s" % (entry_point.label, len(files)))
+        file = _find_copied_file(files[0], inputs)
+        result[_resolve_js_input(file, inputs)] = name
     return result
+
+def _find_copied_file(f, inputs):
+    """Finds the copied File for `f`.
+
+      We only make files available in `bazel-bin`, so never would want to
+      accidentally use a source file as e.g. entry-point.
+    """
+    for i in inputs:
+        if not i.is_source and f.short_path == i.short_path:
+            return i
+    fail("Could not find copied file for %s" % f.short_path)
 
 def _resolve_js_input(f, inputs):
     if f.extension == "js" or f.extension == "mjs":
-        return f.short_path
+        return to_output_relative_path(f)
 
     # look for corresponding js file in inputs
     no_ext = _no_ext(f)
     for i in inputs:
-        if i.extension == "js" or i.extension == "mjs":
+        if not i.is_source and i.extension == "js" or i.extension == "mjs":
             if _no_ext(i) == no_ext:
                 return i
     fail("Could not find corresponding javascript entry point for %s. Add the %s.js to your deps." % (f.path, no_ext))
@@ -121,16 +129,16 @@ def _rollup_outs(sourcemap, name, entry_point, entry_points, output_dir):
     return result
 
 def _no_ext(f):
-    return f.short_path[:-len(f.extension) - 1]
+    return to_output_relative_path(f)[:-len(f.extension) - 1]
 
 def _filter_js(files):
     return [f for f in files if f.extension == "js" or f.extension == "mjs"]
 
 def _impl(ctx):
     input_sources = copy_files_to_bin_actions(ctx, ctx.files.srcs)
-    entry_point = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_point))
-    entry_points = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_points))
-    inputs = entry_point + entry_points + input_sources + ctx.files.deps
+    copied_entry_point = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_point))
+    copied_entry_points = copy_files_to_bin_actions(ctx, _filter_js(ctx.files.entry_points))
+    inputs = copied_entry_point + copied_entry_points + input_sources + ctx.files.deps
 
     args = ctx.actions.args()
 
@@ -148,10 +156,10 @@ def _impl(ctx):
         output_sources.append(ctx.actions.declare_directory(ctx.label.name))
         for entry_point in entry_points:
             args.add_joined([entry_point[1], entry_point[0]], join_with = "=")
-        args.add_all(["--output.dir", output_sources[0].short_path])
+        args.add_all(["--output.dir", to_output_relative_path(output_sources[0])])
     else:
         args.add(entry_points[0][0])
-        args.add_all(["--output.file", output_sources[0].short_path])
+        args.add_all(["--output.file", to_output_relative_path(output_sources[0])])
 
     args.add_all(["--format", ctx.attr.format])
 
@@ -161,7 +169,7 @@ def _impl(ctx):
 
     if ctx.attr.config_file:
         config_file = copy_file_to_bin_action(ctx, ctx.file.config_file)
-        args.add_all(["--config", _output_relative_path(config_file)])
+        args.add_all(["--config", to_output_relative_path(config_file)])
         inputs.append(config_file)
 
     if (ctx.attr.sourcemap and ctx.attr.sourcemap != "false"):

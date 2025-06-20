@@ -78,6 +78,11 @@ jobs:
                       bazel-version:
                           major: 6
 
+                    # Linux on the primary bazel version is tested on Aspect Workflows
+                    - os: ubuntu
+                      bazel-version:
+                          major: 7
+                      bzlmod: 1
         steps:
             - uses: actions/checkout@v4
 

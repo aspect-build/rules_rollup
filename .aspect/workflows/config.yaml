@@ -1,0 +1,22 @@
+# See https://docs.aspect.build/workflows/configuration
+workspaces:
+    .:
+        icon: rollup
+        label: rules_rollup
+    e2e/smoke:
+        icon: bazel
+        tasks:
+            - test:
+                  queue: aspect-medium
+            - buildifier:
+                  without: true
+tasks:
+    - checkout:
+          update_strategy: rebase
+    - test:
+    - buildifier:
+          queue: aspect-medium
+    - finalization:
+          queue: aspect-small
+notifications:
+    github: {}

@@ -241,7 +241,6 @@ lib = struct(
     outputs = _rollup_outs,
 )
 
-# for stardoc
 rollup = rule(
     implementation = lib.implementation,
     attrs = lib.attrs,

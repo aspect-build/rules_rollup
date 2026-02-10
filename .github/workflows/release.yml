@@ -14,18 +14,13 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-            - name: Mount bazel caches
-              uses: actions/cache@v4
+            - name: Setup Bazel
+              uses: bazel-contrib/setup-bazel@0.18.0
               with:
-                  path: |
-                      "~/.cache/bazel"
-                      "~/.cache/bazel-repo"
-                  key: bazel-cache-${{ hashFiles('**/BUILD.bazel', '**/*.bzl', 'WORKSPACE') }}
-                  restore-keys: bazel-cache-
+                  bazelisk-cache: true
+                  disk-cache: ${{ github.workflow }}
+                  repository-cache: true
             - name: bazel test //...
-              env:
-                  # Bazelisk will download bazel to here
-                  XDG_CACHE_HOME: ~/.cache/bazel-repo
               run: bazel --bazelrc=.github/workflows/ci.bazelrc --bazelrc=.bazelrc test //...
             - name: Prepare release
               run: .github/workflows/release_prep.sh ${{ env.GITHUB_REF_NAME }} > release_notes.txt

@@ -29,3 +29,9 @@ bzl_library(
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
 )
+
+starlark_doc_extract(
+    name = "defs.doc_extract",
+    src = "defs.bzl",
+    deps = [":defs"],
+)

@@ -1,0 +1,9 @@
+{
+    "private": true,
+    "pnpm": {
+        "onlyBuiltDependencies": []
+    },
+    "devDependencies": {
+        "rollup": "3.20.0"
+    }
+}

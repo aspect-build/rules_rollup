@@ -33,25 +33,15 @@ jobs:
                   )
                   printf -v j '{%s},' "${a[@]}"
                   echo "res=[${j%,}]" | tee -a $GITHUB_OUTPUT
-            - id: os
-              name: Prepare 'os' matrix axis
-              # Only run MacOS and Windows on main branch (not PRs) to minimize minutes (billed at 10X and 2X respectively)
-              # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
-              run: |
-                  a=( ubuntu )
-                  if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.head_ref }}" == *"macos"* ]]; then
-                    a+=( macos )
-                  fi
-                  if [[ "${{ github.ref_name }}" == "main" ]] || [[ "${{ github.head_ref }}" == *"windows"* ]]; then
-                    a+=( windows )
-                  fi
-                  printf -v j '"%s",' "${a[@]}"
-                  echo "res=[${j%,}]" | tee -a $GITHUB_OUTPUT
         outputs:
             bazel-version: ${{ steps.bazel-version.outputs.res }}
-            os: ${{ steps.os.outputs.res }}
 
+    # MacOS and Windows smoke tests
+    # Only run on main branch (not PRs) to minimize minutes (billed at 10X and 2X respectively)
+    # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
+    # Linux is tested on Aspect Workflows
     test:
+        if: github.ref_name == 'main' || contains(github.head_ref, 'macos') || contains(github.head_ref, 'windows')
         runs-on: ${{ matrix.os }}-latest
         needs:
             - matrix-prep
@@ -60,7 +50,7 @@ jobs:
             matrix:
                 bazel-version: ${{ fromJSON(needs.matrix-prep.outputs.bazel-version) }}
                 bzlmod: [1, 0]
-                os: ${{ fromJSON(needs.matrix-prep.outputs.os) }}
+                os: [macos, windows]
                 folder:
                     - '.'
                     - 'e2e/smoke'
@@ -71,12 +61,6 @@ jobs:
                       bzlmod: 0
                     - folder: e2e/smoke_rjs3
                       bzlmod: 0
-
-                    # Linux on the primary bazel version is tested on Aspect Workflows
-                    - os: ubuntu
-                      bazel-version:
-                          major: 7
-                      bzlmod: 1
         steps:
             - uses: actions/checkout@v4
 

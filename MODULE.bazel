@@ -15,6 +15,7 @@ bazel_dep(name = "platforms", version = "0.0.5")
 
 ####### Dev dependencies ########
 
+bazel_dep(name = "bazelrc-preset.bzl", version = "1.9.2", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
 
 npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)

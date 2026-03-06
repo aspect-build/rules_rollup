@@ -18,24 +18,6 @@ concurrency:
     cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
-    # Prepares dynamic test matrix values
-    matrix-prep:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - id: bazel-version
-              name: Prepare 'bazel-version' matrix axis
-              run: |
-                  v=$(head -n 1 .bazelversion)
-                  m=${v::1}
-                  a=(
-                    "major:$m, version:\"$v\""
-                  )
-                  printf -v j '{%s},' "${a[@]}"
-                  echo "res=[${j%,}]" | tee -a $GITHUB_OUTPUT
-        outputs:
-            bazel-version: ${{ steps.bazel-version.outputs.res }}
-
     # MacOS and Windows smoke tests
     # Only run on main branch (not PRs) to minimize minutes (billed at 10X and 2X respectively)
     # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
@@ -43,12 +25,9 @@ jobs:
     test:
         if: github.ref_name == 'main' || contains(github.head_ref, 'macos') || contains(github.head_ref, 'windows')
         runs-on: ${{ matrix.os }}-latest
-        needs:
-            - matrix-prep
         strategy:
             fail-fast: false
             matrix:
-                bazel-version: ${{ fromJSON(needs.matrix-prep.outputs.bazel-version) }}
                 bzlmod: [1, 0]
                 os: [macos, windows]
                 folder:
@@ -68,17 +47,13 @@ jobs:
               uses: bazel-contrib/setup-bazel@0.18.0
               with:
                   bazelisk-cache: true
-                  disk-cache: ${{ matrix.bazel-version.version }}-${{ matrix.bzlmod }}-${{ matrix.os }}-${{ matrix.folder }}
+                  disk-cache: ${{ matrix.bzlmod }}-${{ matrix.os }}-${{ matrix.folder }}
                   repository-cache: true
 
-            - name: Configure Bazel version
-              working-directory: ${{ matrix.folder }}
+            - name: Get Bazel major version
+              id: bazel-version
               shell: bash
-              run: |
-                  # Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
-                  # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
-                  # then use .bazelversion to determine which Bazel version to use.
-                  echo "${{ matrix.bazel-version.version }}" > .bazelversion
+              run: echo "major=$(head -n 1 .bazelversion | cut -c1)" >> $GITHUB_OUTPUT
 
             # TODO: remove this block once we have Aspect CLI Windows releases
             - name: Don't use Aspect CLI on Windows
@@ -96,7 +71,7 @@ jobs:
                     --bazelrc=${GITHUB_WORKSPACE//\\/\/}/.github/workflows/ci.bazelrc \
                     test \
                     --config=ci \
-                    --test_tag_filters=-skip-on-bazel${{ matrix.bazel-version.major }} \
-                    --build_tag_filters=-skip-on-bazel${{ matrix.bazel-version.major }} \
+                    --test_tag_filters=-skip-on-bazel${{ steps.bazel-version.outputs.major }} \
+                    --build_tag_filters=-skip-on-bazel${{ steps.bazel-version.outputs.major }} \
                     --enable_bzlmod=${{ matrix.bzlmod }} \
                     //...

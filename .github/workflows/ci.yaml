@@ -67,10 +67,8 @@ jobs:
               shell: bash
               run: |
                   bazel \
-                    --bazelrc=${GITHUB_WORKSPACE//\\/\/}/tools/preset.bazelrc \
                     --bazelrc=${GITHUB_WORKSPACE//\\/\/}/.github/workflows/ci.bazelrc \
                     test \
-                    --config=ci \
                     --test_tag_filters=-skip-on-bazel${{ steps.bazel-version.outputs.major }} \
                     --build_tag_filters=-skip-on-bazel${{ steps.bazel-version.outputs.major }} \
                     --enable_bzlmod=${{ matrix.bzlmod }} \

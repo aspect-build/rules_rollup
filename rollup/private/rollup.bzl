@@ -143,7 +143,7 @@ def _impl(ctx):
     args = ctx.actions.args()
 
     # Add user specified arguments *before* rule supplied arguments
-    args.add_all(ctx.attr.args)
+    args.add_all([ctx.expand_location(args) for arg in ctx.attr.args])
 
     # List entry point argument first to save some argv space. Rollup doc says when provided as the
     # first options, it is equivalent to not prefix them with --input.

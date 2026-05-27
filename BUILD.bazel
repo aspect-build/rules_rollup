@@ -4,5 +4,5 @@ npm_link_all_packages(name = "node_modules")
 
 alias(
     name = "buildifier",
-    actual = "//tools/format:buildifier",
+    actual = "@buildifier_prebuilt//buildifier",
 )

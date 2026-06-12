@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       rollup:
-        specifier: 3.20.0
-        version: 3.20.0
+        specifier: 3.30.0
+        version: 3.30.0
 
 packages:
 
@@ -19,8 +19,8 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  rollup@3.20.0:
-    resolution: {integrity: sha512-YsIfrk80NqUDrxrjWPXUa7PWvAfegZEXHuPsEZg58fGCdjL1I9C1i/NaG+L+27kxxwkrG/QEDEQc8s/ynXWWGQ==}
+  rollup@3.30.0:
+    resolution: {integrity: sha512-kQvGasUgN+AlWGliFn2POSajRQEsULVYFGTvOZmK06d7vCD+YhZztt70kGk3qaeAXeWYL5eO7zx+rAubBc55eA==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
 
@@ -29,6 +29,6 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  rollup@3.20.0:
+  rollup@3.30.0:
     optionalDependencies:
       fsevents: 2.3.3

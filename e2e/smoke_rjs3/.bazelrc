@@ -1,4 +1,4 @@
-import %workspace%/../../.aspect/bazelrc
+try-import %workspace%/../../.aspect/bazelrc
 
 # Import Bazelrc presets
 import %workspace%/../../tools/preset.bazelrc

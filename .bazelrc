@@ -1,3 +1,5 @@
+import %workspace%/.aspect/bazelrc
+
 import %workspace%/tools/preset.bazelrc
 
 common --config=ruleset

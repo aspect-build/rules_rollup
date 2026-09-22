@@ -17,7 +17,6 @@ concurrency:
 
 env:
     ASPECT_WORKSPACE: ${{ github.workspace }}
-    BAZEL_ASPECT_FLAGS: ${{ secrets.ASPECT_OSS_API_TOKEN != '' && '--config=aspect-cloud' || '' }}
 
 jobs:
     # MacOS and Windows smoke tests
@@ -42,6 +41,9 @@ jobs:
                       bzlmod: 0
                     - folder: e2e/smoke_rjs3
                       bzlmod: 0
+        env:
+            # setup-aspect does not support Windows.
+            BAZEL_ASPECT_FLAGS: ${{ matrix.os != 'windows' && secrets.ASPECT_OSS_API_TOKEN != '' && '--config=aspect-cloud' || '' }}
         steps:
             - uses: actions/checkout@v6
 
@@ -53,6 +55,7 @@ jobs:
                   repository-cache: true
 
             - uses: aspect-build/setup-aspect@b1e9d142e86f63c10d603304daa22bf80492e24c # v2026.25.1
+              if: matrix.os != 'windows'
               with:
                   aspect-api-token: ${{ secrets.ASPECT_OSS_API_TOKEN }}
                   disk-cache: false
@@ -61,6 +64,7 @@ jobs:
             # Bazel fails the build rather than create the directory the
             # aspect-exec-log group writes into.
             - run: mkdir -p .aspect/generated
+              if: matrix.os != 'windows'
               shell: bash
               working-directory: ${{ matrix.folder }}
 

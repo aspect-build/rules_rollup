@@ -15,7 +15,9 @@ concurrency:
     cancel-in-progress: true
 
 env:
+    # Indicates where the aspect CLI should look for .aspect/config.json
     ASPECT_WORKSPACE: ${{ github.workspace }}
+    # Skip the --remote flag on fork PRs, which do not have access to secrets
     REMOTE_FLAG: ${{ secrets.ASPECT_OSS_API_TOKEN != '' && '--remote' || '' }}
 
 jobs:

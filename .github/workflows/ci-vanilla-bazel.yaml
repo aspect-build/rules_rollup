@@ -15,6 +15,9 @@ concurrency:
     group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
     cancel-in-progress: true
 
+env:
+    ASPECT_WORKSPACE: ${{ github.workspace }}
+
 jobs:
     # MacOS and Windows smoke tests
     # Only run on main branch (not PRs) to minimize minutes (billed at 10X and 2X respectively)
@@ -38,6 +41,10 @@ jobs:
                       bzlmod: 0
                     - folder: e2e/smoke_rjs3
                       bzlmod: 0
+        env:
+            # Skip Aspect Cloud on Windows and on fork PRs. Windows is not supported by
+            # setup-aspect, and fork PRs do not have access to the necessary secrets.
+            BAZEL_ASPECT_FLAGS: ${{ matrix.os != 'windows' && secrets.ASPECT_OSS_API_TOKEN != '' && '--config=aspect-cloud' || '' }}
         steps:
             - uses: actions/checkout@v6
 
@@ -47,6 +54,20 @@ jobs:
                   bazelisk-cache: true
                   disk-cache: ${{ matrix.bzlmod }}-${{ matrix.os }}-${{ matrix.folder }}
                   repository-cache: true
+
+            - uses: aspect-build/setup-aspect@b1e9d142e86f63c10d603304daa22bf80492e24c # v2026.25.1
+              if: matrix.os != 'windows'
+              with:
+                  aspect-api-token: ${{ secrets.ASPECT_OSS_API_TOKEN }}
+                  disk-cache: false
+                  repository-cache: false
+
+            # Bazel fails the build rather than create the directory the
+            # aspect-exec-log group writes into.
+            - run: mkdir -p .aspect/generated
+              if: matrix.os != 'windows'
+              shell: bash
+              working-directory: ${{ matrix.folder }}
 
             - name: Get Bazel major version
               id: bazel-version
@@ -60,6 +81,7 @@ jobs:
                   bazel \
                     --bazelrc=${GITHUB_WORKSPACE//\\/\/}/.github/workflows/ci.bazelrc \
                     test \
+                    ${{ env.BAZEL_ASPECT_FLAGS }} \
                     --test_tag_filters=-skip-on-bazel${{ steps.bazel-version.outputs.major }} \
                     --build_tag_filters=-skip-on-bazel${{ steps.bazel-version.outputs.major }} \
                     --enable_bzlmod=${{ matrix.bzlmod }} \

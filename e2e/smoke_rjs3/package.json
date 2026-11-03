@@ -4,6 +4,6 @@
         "onlyBuiltDependencies": []
     },
     "devDependencies": {
-        "rollup": "3.20.0"
+        "rollup": "3.30.0"
     }
 }
